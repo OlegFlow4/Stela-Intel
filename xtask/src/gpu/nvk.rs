@@ -199,7 +199,7 @@ const ANV: Driver = Driver {
     options: &ANV_OPTIONS,
     host_tools: true,
     // A release image holds no Intel port.
-    released: false,
+    released: true,
     model: "anv_util.c",
     stand_ins: &["anv_nir_options"],
     libraries: &[],
