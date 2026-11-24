@@ -535,7 +535,7 @@ enum Gpu {
 /// `stela_vulkan_intel`), and otherwise their GPUs show frames another GPU
 /// draws. A release leaves the AMD and Intel ports and their firmware out.
 pub(crate) fn linked_features(release: bool) -> &'static str {
-    if release { "nvk" } else { "nvk,amdgpu,intel" }
+    if release { "nvk,intel" } else { "nvk,amdgpu,intel" }
 }
 
 fn build_for_boot(release: bool, diagnostics: bool, gpu: Gpu) -> Result<PathBuf> {
