@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="assets/stela-icon.pn" alt="" width="96"><br>
+  <img src="assets/stela-icon.png" alt="" width="96"><br>
   Stela — Intel Edition
 </h1>
 
