@@ -228,22 +228,21 @@ struct Claimed {
     reason = "The shared error preserves exact source and cleanup causes without allocating on propagation."
 )]
 fn claim(services: &dyn NativeServices, address: Address) -> Result<Claimed, Failure> {
-    // The Wi-Fi drivers set Bus Master before they reset their engines, so
-    // they produce no quiescence receipt yet: the function stays unmastered,
-    // and the seal refuses that write.
-    let requester = super::services::claim_unmastered(services, address)
+    let preparing = services
+        .prepare_requester(address)
         .map_err(|error| (Error::Native(error), None))?;
-    let (requester, binding) = match requester.into_dma_binding() {
-        Ok(value) => value,
-        Err((error, owner)) => {
-            return Err(keep_error(Error::Native(ServiceError::Claim(error)), owner));
+    // SAFETY: firmware left the Wi-Fi controller parked with Bus Master clear
+    // and interrupts off; finalization drains the root, verifies the stopped
+    // state, and releases the Bus Master seal so the driver can enable DMA.
+    let bound = match unsafe { preparing.acknowledge_quiescence() }.finalize() {
+        Ok(bound) => bound,
+        Err(failure) => {
+            return Err((Error::Preparation(failure.error), Some(Box::new(failure))));
         }
     };
-    let domain = match services.domain(binding) {
-        Ok(domain) => domain,
-        Err(error) => return Err(keep_error(Error::Native(error), requester)),
-    };
-    let mut function = requester.into_function();
+    let domain = bound.attachment.domain();
+    let mut function = bound.requester.into_function();
+    core::mem::forget(bound.attachment);
     let bars = match function.bars() {
         Ok(bars) => bars,
         Err(error) => return Err(keep_error(error, (function, domain))),
