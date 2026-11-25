@@ -69,6 +69,6 @@ Stela — Intel Edition is a UEFI boot environment that runs ARM64 macOS on Inte
 ### Compiling from Source
 
 ```sh
-git clone [https://github.com/OlegFlow4/Stela-Intel](https://github.com/OlegFlow4/Stela-Intel)
+git clone https://github.com/OlegFlow4/Stela-Intel
 cd Stela-Intel
 cargo xtask dist
