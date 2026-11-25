@@ -402,9 +402,6 @@ pub fn register_bar(bar: Option<Bar>, page: u64) -> Result<(), RegisterBar> {
     match bar {
         None => Err(RegisterBar::Absent),
         Some(Bar::Io { .. }) => Err(RegisterBar::Io),
-        Some(Bar::Memory {
-            prefetchable: true, ..
-        }) => Err(RegisterBar::Prefetchable),
         Some(Bar::Memory { size, .. }) if size < page => Err(RegisterBar::Small),
         Some(Bar::Memory { address: 0, .. }) => Err(RegisterBar::Unassigned),
         Some(Bar::Memory { .. }) => Ok(()),
